@@ -1,0 +1,10 @@
+# large files
+*.tar
+
+# folder
+bands/
+
+# slurm
+*.out
+*.sh
+
