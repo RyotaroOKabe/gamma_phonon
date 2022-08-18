@@ -1,5 +1,13 @@
 #%%
-# python==3.10
+"""
+python==3.10
+mp_api==0.25.2
+ase==3.22.0
+pandas=1.4.2
+matplotlib==3.5.1
+tqdm==4.64.0
+"""
+
 from mp_api.client import MPRester
 import numpy as np
 import matplotlib.pyplot as plt
