@@ -65,7 +65,6 @@ def tosize(a, n):
 
 df = pd.read_pickle(f'data/df_struct_phonon.pkl')
 species = sorted(list(set(df['species'].sum())))
-from dataframe_v1 import tosize
 df['gph'] = df['g_phs'].map(lambda x: tosize(x, pad_size))
 
 #%%
