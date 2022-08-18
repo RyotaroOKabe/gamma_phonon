@@ -2,23 +2,15 @@
 # python==3.10
 from mp_api.client import MPRester
 import numpy as np
-import torch
 import matplotlib.pyplot as plt
 from glob import glob
-import time, os, sys
 from os.path import join as opj
 import json
 import pandas as pd
 from tqdm import tqdm
-import csv
 import pickle as pkl
-import pymatgen
 from pymatgen.core.structure import Structure
-from pymatgen.core.periodic_table import Element
-import datetime
-from ase import Atom, Atoms
-from ase.neighborlist import neighbor_list
-from ase.visualize.plot import plot_atoms
+from ase import Atoms
 bar_format = '{l_bar}{bar:10}{r_bar}{bar:-10b}'
 api_key = "PvfnzQv5PLh4Lzxz1pScKnAtcmmWVaeU"
 generate_fig = False
