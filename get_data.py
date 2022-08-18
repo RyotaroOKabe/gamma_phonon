@@ -20,7 +20,7 @@ import pickle as pkl
 from pymatgen.core.structure import Structure
 from ase import Atoms
 bar_format = '{l_bar}{bar:10}{r_bar}{bar:-10b}'
-api_key = "your_MP_API_key"
+api_key = "PvfnzQv5PLh4Lzxz1pScKnAtcmmWVaeU"
 generate_fig = False
 
 #%%

@@ -36,9 +36,9 @@ torch.set_default_dtype(default_dtype)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print('torch device:' , device)
-f_name = 'v1.3'
+f_name = 'v2.1'
 max_iter = 100
-pad_size = 48
+pad_size = 6
 print('max_iter: ', max_iter)
 print("pad_size: ", pad_size)
 
