@@ -4,7 +4,6 @@
 # folder
 archives/
 bands_2/
-savefig/
 slurm/
 
 # slurm
@@ -19,3 +18,4 @@ mp_api_ex_v1.ipynb
 data_check_v1.ipynb
 dataframe_v1.py
 download_cifs_v1.ipynb
+g_phonon_e3nn.ipynb

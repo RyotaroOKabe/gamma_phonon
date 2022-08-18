@@ -36,8 +36,9 @@ torch.set_default_dtype(default_dtype)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print('torch device:' , device)
+f_name = 'v1.3'
 max_iter = 100
-pad_size = 39
+pad_size = 48
 print('max_iter: ', max_iter)
 print("pad_size: ", pad_size)
 
@@ -240,7 +241,7 @@ model = PeriodicNetwork(
     irreps_node_attr=str(em_dim)+"x0e",    # em_dim scalars (L=0 and even parity) on each atom to represent atom type
     layers=2,                              # number of nonlinearities (number of convolutions = layers + 1)
     mul=32,                                # multiplicity of irreducible representations
-    lmax=1,                                # maximum order of spherical harmonics
+    lmax=2,                                # maximum order of spherical harmonics
     max_radius=r_max,                      # cutoff radius for convolution
     num_neighbors=n_train.mean(),          # scaling factor based on the typical number of neighbors
     reduce_output=True                     # whether or not to aggregate features of all atoms at the end
@@ -260,8 +261,8 @@ loss_fn = torch.nn.MSELoss()
 loss_fn_mae = torch.nn.L1Loss()
 
 
-run_name = 'model_' + time.strftime("%y%m%d", time.localtime())
-print(run_name)
+run_name = 'model_' + time.strftime("%y%m%d", time.localtime()) + f'_{f_name}_ep{max_iter}_{pad_size}'
+print("run_name: ", run_name)
 
 #%%
 model.pool = True
@@ -284,8 +285,49 @@ ax.plot(steps, loss_train, 'o-', label="Training", color=colors['train'])
 ax.plot(steps, loss_valid, 'o-', label="Validation", color=colors['valid'])
 ax.set_xlabel('epochs')
 ax.set_ylabel('loss')
-ax.legend(frameon=False);
-fig.savefig(f'savefig/{run_name}_ep{max_iter}.png')
+ax.legend(frameon=False)
+fig.patch.set_facecolor('white')
+fig.savefig(f'savefig/{run_name}.png')
+
+
+#%%
+# predict on all data
+model.load_state_dict(torch.load(run_name + '.torch', map_location=device)['state'])
+model.pool = True
+
+dataloader = tg.loader.DataLoader(df['data'].values, batch_size=64)
+df['mse'] = 0.
+df['gph_pred'] = np.empty((len(df), 0)).tolist()
+
+model.to(device)
+model.eval()
+with torch.no_grad():
+    i0 = 0
+    for i, d in tqdm(enumerate(dataloader), total=len(dataloader), bar_format=bar_format):
+        d.to(device)
+        output = model(d)
+        loss = F.mse_loss(output, d.gph, reduction='none').mean(dim=-1).cpu().numpy()   #! phdos > gph
+        df.loc[i0:i0 + len(d.gph) - 1, 'gph_pred'] = [[k] for k in output.cpu().numpy()]
+        df.loc[i0:i0 + len(d.gph) - 1, 'mse'] = loss
+        i0 += len(d.gph)
+        
+df['gph_pred'] = df['gph_pred'].map(lambda x: x[0])
+
+#%%
+plot_predictions(df, idx_train, 'Training')
+plt.savefig(f"savefig/{run_name}_train_out.png")
+
+plot_predictions(df, idx_valid, 'Validation')
+plt.savefig(f"savefig/{run_name}_valid_out.png")
+
+plot_predictions(df, idx_test, 'Testing')
+plt.savefig(f"savefig/{run_name}_test_out.png")
+
+#%%
+
+
+
+
 
 
 

@@ -107,6 +107,7 @@ def train_valid_test_split(df, species, valid_size, test_size, seed=12, plot=Fal
 
         fig.tight_layout()
         fig.subplots_adjust(hspace=0.1)
+        fig.patch.set_facecolor('white')
 
     return idx_train, idx_valid, idx_test
 
@@ -218,6 +219,7 @@ def plot_example(df, i=12, label_edges=False):
     pad = np.array([-0.5, 0.5])
     ax[1].set_xlim(np.array(ax[1].get_xlim()) + pad)
     ax[1].set_ylim(np.array(ax[1].get_ylim()) + pad)
+    fig.patch.set_facecolor('white')
     fig.subplots_adjust(wspace=0.4)
 
 
@@ -230,9 +232,9 @@ def plot_predictions(df, idx, title=None):
     
     n = 7
     s = np.concatenate([np.sort(np.random.choice(np.arange(iq[k-1], iq[k], 1), size=n, replace=False)) for k in range(1,5)])
-    x = df.iloc[0]['phfreq']
+    #x = df.iloc[0]['phfreq']
 
-    fig, axs = plt.subplots(4,n+1, figsize=(13,3.5), gridspec_kw={'width_ratios': [0.7] + [1]*n})
+    fig, axs = plt.subplots(4,n+1, figsize=(13,8), gridspec_kw={'width_ratios': [0.7] + [1]*n})
     gs = axs[0,0].get_gridspec()
     
     # remove the underlying axes
@@ -263,13 +265,17 @@ def plot_predictions(df, idx, title=None):
     for k in range(4*n):
         ax = axs[k]
         i = s[k]
-        ax.plot(x, ds.iloc[i]['gph'], color='black')  #! phdos -> gph
-        ax.plot(x, ds.iloc[i]['gph_pred'], color=cols[k])
+        # ax.plot(x, ds.iloc[i]['gph'], color='black')  #! phdos -> gph
+        # ax.plot(x, ds.iloc[i]['gph_pred'], color=cols[k])
+        ax.scatter(ds.iloc[i]['gph'], ds.iloc[i]['gph_pred'], s=15)
         ax.set_xticks([]); ax.set_yticks([])
+        ax.set_xlabel('g-ph [ref]')
+        ax.set_ylabel('g-ph [pred]')
         ax.set_title(ds.iloc[i]['formula'].translate(sub), fontsize=fontsize, y=0.95)
         
     fig.tight_layout()
     fig.subplots_adjust(hspace=0.6)
+    fig.patch.set_facecolor('white')
     if title: fig.suptitle(title, ha='center', y=1., fontsize=fontsize + 4)
 
 
@@ -280,7 +286,7 @@ def plot_partials(model, df, idx, device='cpu'):
     
     # initialize figure axes
     N = df.iloc[ids]['species'].str.len().max()
-    fig, ax = plt.subplots(r, N+1, figsize=(2.4*(N+1),1.2*r), sharex=True, sharey=True)
+    fig, ax = plt.subplots(r, N+1, figsize=(2.4*(N+1),2.4*r), sharex=True, sharey=True)
 
     # predict output of each site for each sample
     for row, i in enumerate(ids):
@@ -301,18 +307,21 @@ def plot_partials(model, df, idx, device='cpu'):
         for j, s in enumerate(entry.species):
             pdos[s] /= entry.data.symbol.count(s)
 
-        # plot total DoS
-        ax[row,0].plot(entry.phfreq, entry.gph, color='black')    #! phdos -> gph
-        ax[row,0].plot(entry.phfreq, entry.gph_pred, color=palette[0])
+        ax[row,0].scatter(entry.gph, entry.gph_pred, s=15)   #! phdos -> gph
         ax[row,0].set_title(entry.formula.translate(sub), fontsize=fontsize - 2, y=0.99)
         ax[row,0].set_xticks([]); ax[row,0].set_yticks([])
+        ax[row,0].set_xlabel('g-ph [ref]')
+        ax[row,0].set_ylabel('g-ph [pred]')
 
         # plot partial DoS
         for j, s in enumerate(entry.species):
-            ax[row,j+1].plot(entry.phfreq, entry.pdos[s], color='black')
-            ax[row,j+1].plot(entry.phfreq, pdos[s]/pdos[s].max(), color=palette[1], lw=2)
+            # ax[row,j+1].plot(entry.phfreq, entry.pdos[s], color='black')
+            # ax[row,j+1].plot(entry.phfreq, pdos[s]/pdos[s].max(), color=palette[1], lw=2)
+            ax[row,j+1].scatter(entry.gph, entry.gph_pred, s=15)   #! phdos -> gph
             ax[row,j+1].set_title(s, fontsize=fontsize - 2, y=0.99)
             ax[row,j+1].set_xticks([]); ax[row,j+1].set_yticks([])
+            ax[row,j+1].set_xlabel('g-ph [ref]')
+            ax[row,j+1].set_ylabel('g-ph [pred]')
 
         for j in range(len(entry.species) + 1, N+1):
             ax[row,j].remove()
