@@ -10,6 +10,7 @@ slurm/
 *.out
 *.sh
 *.torch
+get_data.py
 g_phonon_v1.py
 g_phonon_e3nn_v0*
 phononDoS_colab.ipynb
@@ -19,4 +20,3 @@ data_check_v1.ipynb
 dataframe_v1.py
 download_cifs_v1.ipynb
 g_phonon_e3nn.ipynb
-get_data.py
