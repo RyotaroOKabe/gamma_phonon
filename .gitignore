@@ -2,9 +2,18 @@
 *.tar
 
 # folder
-bands/
+archives/
+bands_2/
 
 # slurm
 *.out
 *.sh
-
+*.torch
+g_phonon_v1.py
+g_phonon_e3nn_v0*
+phononDoS_colab.ipynb
+phdos_train.ipynb
+mp_api_ex_v1.ipynb
+data_check_v1.ipynb
+dataframe_v1.py
+download_cifs_v1.ipynb
