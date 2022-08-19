@@ -127,7 +127,7 @@ for i, id in tqdm(enumerate(mp_ids), total=len(mp_ids), bar_format=bar_format):
     df = pd.concat([df, df0], ignore_index=True)
 
 df.to_pickle(f'data/df_struct_phonon.pkl')
-#df = pd.read_pickle(f'data/df_struct_phonon.pkl'
+#df = pd.read_pickle(f'data/df_struct_phonon.pkl')
 
 species = sorted(list(set(df['species'].sum())))
 

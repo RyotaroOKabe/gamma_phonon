@@ -288,6 +288,7 @@ def evaluate(model, dataloader, loss_fn, loss_fn_mae, device):
 def train(model, optimizer, dataloader_train, dataloader_valid, loss_fn, loss_fn_mae, run_name,
           max_iter=101, scheduler=None, device="cpu"):
     model.to(device)
+    nan_list = []
 
     checkpoint_generator = loglinspace(0.3, 5)
     checkpoint = next(checkpoint_generator)
@@ -318,6 +319,11 @@ def train(model, optimizer, dataloader_train, dataloader_valid, loss_fn, loss_fn
             loss_cumulative = loss_cumulative + loss.detach().item()
             loss_cumulative_mae = loss_cumulative_mae + loss_mae.detach().item()
 
+            #!
+            if torch.isnan(loss).item():
+                print(f"{d.mpid} got NaN when calculating loss!")
+                nan_list.append(d.mpid.item())
+
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -331,6 +337,13 @@ def train(model, optimizer, dataloader_train, dataloader_valid, loss_fn, loss_fn
 
             valid_avg_loss = evaluate(model, dataloader_valid, loss_fn, loss_fn_mae, device)
             train_avg_loss = evaluate(model, dataloader_train, loss_fn, loss_fn_mae, device)
+
+
+            #!
+            if torch.isnan(torch.Tensor([train_avg_loss[0]])).item():
+                print(f"{d.mpid} got NaN when evaluating loss!")
+                nan_list.append(d.mpid.item())
+
 
             history.append({
                 'step': s0 + step,
@@ -364,3 +377,7 @@ def train(model, optimizer, dataloader_train, dataloader_valid, loss_fn, loss_fn
 
         if scheduler is not None:
             scheduler.step()
+    
+    nan_set = set(nan_list)
+    print('nan_set')
+    print(nan_set)

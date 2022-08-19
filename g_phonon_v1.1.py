@@ -34,10 +34,10 @@ bar_format = '{l_bar}{bar:10}{r_bar}{bar:-10b}'
 default_dtype = torch.float64
 torch.set_default_dtype(default_dtype)
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
+device = "cuda:7" if torch.cuda.is_available() else "cpu"
 print('torch device:' , device)
-f_name = 'v2.1'
-max_iter = 100
+f_name = 'v3.0'
+max_iter = 5
 pad_size = 6
 print('max_iter: ', max_iter)
 print("pad_size: ", pad_size)
