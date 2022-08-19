@@ -100,7 +100,7 @@ for i, id in tqdm(enumerate(mp_ids), total=len(mp_ids), bar_format=bar_format):
     g_pt_ = np.where(band[:, 0]==band[:, 0].min())[0]
     choice = int(g_pt_.shape[0] / 2)    # get the middle point
     g_pt = g_pt_[choice]
-    g_phs = band[choice, :]
+    g_phs = band[g_pt, :]   #!
     print('Gamma point for use: ', g_pt)
     print('g_phs', g_phs)
     rrr = {"id": id,
@@ -108,7 +108,7 @@ for i, id in tqdm(enumerate(mp_ids), total=len(mp_ids), bar_format=bar_format):
            'sites': struct.num_sites,
            'species':[list(set(struct_ase.get_chemical_symbols()))],
            "structure_pm":[struct],
-           "structure": [struct_ase],
+           "structure_ase": [struct_ase],
            "phfreq": [freq],
            "phfreq_shape": [np.array(freq).shape],
            "qpts": [qpts],

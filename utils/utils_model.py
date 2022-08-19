@@ -278,8 +278,8 @@ def evaluate(model, dataloader, loss_fn, loss_fn_mae, device):
         for j, d in enumerate(dataloader):
             d.to(device)
             output = model(d)
-            loss = loss_fn(output, d.gph).cpu() #! phdos > gph
-            loss_mae = loss_fn_mae(output, d.gph).cpu()
+            loss = loss_fn(output, d.gph.reshape((1, -1))).cpu() #! phdos > gph
+            loss_mae = loss_fn_mae(output, d.gph.reshape((1, -1))).cpu()
             loss_cumulative = loss_cumulative + loss.detach().item()
             loss_cumulative_mae = loss_cumulative_mae + loss_mae.detach().item()
     return loss_cumulative/len(dataloader), loss_cumulative_mae/len(dataloader)
@@ -314,15 +314,16 @@ def train(model, optimizer, dataloader_train, dataloader_valid, loss_fn, loss_fn
         for j, d in tqdm(enumerate(dataloader_train), total=len(dataloader_train), bar_format=bar_format):
             d.to(device)
             output = model(d)
-            loss = loss_fn(output, d.gph).cpu() #! phdos > gph
-            loss_mae = loss_fn_mae(output, d.gph).cpu()
+            loss = loss_fn(output, d.gph.reshape((1, -1))).cpu() #! phdos > gph
+            loss_mae = loss_fn_mae(output, d.gph.reshape((1, -1))).cpu()
             loss_cumulative = loss_cumulative + loss.detach().item()
             loss_cumulative_mae = loss_cumulative_mae + loss_mae.detach().item()
 
             #!
             if torch.isnan(loss).item():
                 print(f"{d.mpid} got NaN when calculating loss!")
-                nan_list.append(d.mpid.item())
+                nan_list.append(d.mpid[0])
+                continue
 
             optimizer.zero_grad()
             loss.backward()
@@ -342,7 +343,8 @@ def train(model, optimizer, dataloader_train, dataloader_valid, loss_fn, loss_fn
             #!
             if torch.isnan(torch.Tensor([train_avg_loss[0]])).item():
                 print(f"{d.mpid} got NaN when evaluating loss!")
-                nan_list.append(d.mpid.item())
+                nan_list.append(d.mpid[0])
+                continue
 
 
             history.append({
